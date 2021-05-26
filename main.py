@@ -16,12 +16,12 @@ email = "chaterprakash@gmail.com"
 password = "pcchater@160997"
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
+app.config['SECRET_KEY'] = "qwertyuioplkjhgfdsa"
 ckeditor = CKEditor(app)
 Bootstrap(app)
 
 ##CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///blog.db")
+app.config['SQLALCHEMY_DATABASE_URI'] ="sqlite:///blog.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -213,6 +213,7 @@ def send_email(name, email, phone, message):
 
 @app.route("/new-post", methods=["GET", "POST"])
 @admin_user
+@login_required
 def add_new_post():
     form = CreatePostForm()
     if form.validate_on_submit():
@@ -232,6 +233,7 @@ def add_new_post():
 
 @app.route("/edit-post/<int:post_id>", methods=["GET", "POST"])
 @admin_user
+@login_required
 def edit_post(post_id):
     post = BlogPost.query.get(post_id)
     edit_form = CreatePostForm(
@@ -255,6 +257,7 @@ def edit_post(post_id):
 
 @app.route("/delete/<int:post_id>")
 @admin_user
+@login_required
 def delete_post(post_id):
     post_to_delete = BlogPost.query.get(post_id)
     db.session.delete(post_to_delete)

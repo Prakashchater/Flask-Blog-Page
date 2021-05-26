@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, abort
+from flask import Flask, render_template, redirect, url_for, flash, abort, request
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from datetime import date
@@ -9,7 +9,11 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, cur
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 from flask_gravatar import Gravatar
 from functools import wraps
+from smtplib import SMTP
 import os
+
+email = "chaterprakash@gmail.com"
+password = "pcchater@160997"
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
@@ -73,9 +77,6 @@ class Comment(db.Model):
     text = db.Column(db.Text, nullable=False)
 
 db.create_all()
-
-
-
 
 ##Create admin-only decorator
 def admin_user(f):
@@ -191,9 +192,23 @@ def about():
     return render_template("about.html", current_user=current_user)
 
 
-@app.route("/contact")
+@app.route("/contact", methods=["GET", "POST"])
 def contact():
-    return render_template("contact.html", current_user=current_user)
+    if request.method == "POST":
+        data = request.form
+        send_email(data["name"], data["email"], data["phone"], data["message"])
+        return render_template("contact.html", msg_send=True)
+    return render_template("contact.html", msg_send=False, current_user=current_user)
+
+
+def send_email(name, email, phone, message):
+    email_message = f"Subject:New Message\n\nName: {name}\nEmail: {email}\nPhone: {phone}\nMessage:{message}"
+    with SMTP("smtp.gmail.com") as smtp:
+        smtp.starttls()
+        smtp.login(user=email,
+                   password=password
+                   )
+        smtp.sendmail(from_addr=email, to_addrs=email, msg=email_message)
 
 
 @app.route("/new-post", methods=["GET", "POST"])

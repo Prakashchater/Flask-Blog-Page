@@ -12,8 +12,8 @@ from functools import wraps
 from smtplib import SMTP
 import os
 
-email = "chaterprakash@gmail.com"
-password = "pcchater@160997"
+email = "YOUR EMAIL ID"
+password = "YOUR PASSWORD"
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
